@@ -116,6 +116,11 @@ namespace GitHubUpdate
             return downloadOutcome;
         }
 
+        public Release getCurrentRelease()
+        {
+            return LatestRelease;
+        }
+
         public /*async*/ void DownloadAsset(string assetname)
         {
             // asset.Url is some api wizardry that we'll maybe use later
