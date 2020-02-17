@@ -18,6 +18,7 @@ namespace GitHubUpdate
     public class UpdateChecker
     {
         private IReleasesClient _releaseClient;
+        private string downloadOutcome;
         internal GitHubClient Github;
 
         internal SemVersion CurrentVersion;
@@ -110,6 +111,11 @@ namespace GitHubUpdate
             return await Github.Miscellaneous.RenderRawMarkdown(LatestRelease.Body);
         }
 
+        public string getDownloadOutcome()
+        {
+            return downloadOutcome;
+        }
+
         public /*async*/ void DownloadAsset(string assetname)
         {
             // asset.Url is some api wizardry that we'll maybe use later
@@ -120,7 +126,21 @@ namespace GitHubUpdate
             const string template = "https://github.com/{0}/{1}/releases/download/{2}/{3}";
             var url = string.Format(template, RepositoryOwner, RepostoryName, LatestRelease.TagName, assetname);
 
-            System.Diagnostics.Process.Start(url);
+            //System.Diagnostics.Process.Start(url);
+            Downloader download = new Downloader(url, assetname, "Compressed zip file (*.zip)|*.zip");
+
+            try
+            {
+                download.InitDownload();
+            }
+            catch (Exception ex)
+            {
+                downloadOutcome = "Error when downloading file: " + ex.Message;
+            }
+            finally
+            {
+                downloadOutcome = download.getDownloadOutcome();
+            }
         }
     }
 }
